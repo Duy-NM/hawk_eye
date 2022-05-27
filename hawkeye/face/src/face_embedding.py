@@ -7,12 +7,35 @@ import onnxruntime
 # import tensorflow as tf
 import cv2
 from sklearn.preprocessing import normalize
+import os, gdown
 
+model_dir = os.path.join(os.path.expanduser('~'), '.hawkeye/model')
+class ArcFace:
+    def __init__(self, model_name='', model_file=None, session=None):
 
-class ArcFaceONNX:
-    def __init__(self, model_file=None, session=None):
-        assert model_file is not None
-        self.model_file = model_file
+        '''
+        model_name: choice in ['arcface_s', 'arcface_m', 'arcface_l']
+                    default is arcface_m
+                    arcface_s -> SCRFD-500MF
+                    arcface_m -> SCRFD-2.5GF
+                    arcface_l -> SCRFD-10GF
+        '''
+        if model_file is None:
+            assert model_name in ['', 'arcface_s', 'arcface_m', 'arcface_l'], 'model_name is wrong'
+            if model_name == 'arcface_s':
+                self.model_file = model_dir + '/s_w600k_mbf.onnx'
+                if os.path.exists(model_dir + '/s_w600k_mbf.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1Dvxphqyc84urh001xFPUWxmhVvrI7IbS&export=download', model_dir + '/s_w600k_mbf.onnx', quiet=False)
+            if model_name == 'arcface_m' or  model_name == '':
+                self.model_file = model_dir + '/glint360_r50.onnx'
+                if os.path.exists(model_dir + '/glint360_r50.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1obFVt88uEuoOYkOV2G6oAoQdBwSJGgy2&export=download', model_dir + '/glint360_r50.onnx', quiet=False)
+            if model_name == 'arcface_l':
+                self.model_file = model_dir + '/glint360_r100.onnx'
+                if os.path.exists(model_dir + '/glint360_r100.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1eHNQK7QbHFNEHqRUOlQNC0ju5E-ctjHX&export=download', model_dir + '/glint360_r100.onnx', quiet=False)
+        else:
+            self.model_file = model_file
         self.session = session
         self.taskname = 'recognition'
         find_sub = False
@@ -57,7 +80,7 @@ class ArcFaceONNX:
         aimg = face_align.norm_crop(img, landmark=kps)
         # cv2.imshow('aaasd', aimg)
         # cv2.waitKey(1)
-        cv2.imwrite('aaaa.jpg', aimg)
+        # cv2.imwrite('aaaa.jpg', aimg)
         embedding = self.get_feat(aimg).flatten()
         return embedding
 
@@ -71,21 +94,4 @@ class ArcFaceONNX:
         net_out = self.session.run(self.output_names, {self.input_name: blob})[0]
         return net_out
 
-if __name__ == '__main__':
-    from face_detection import RetinaFace
-    retinaface_ = RetinaFace(model_file='/home/vti/.insightface/models/buffalo_l/det_10g.onnx')
-    arcface = ArcFaceONNX(model_file='/home/vti/.insightface/models/buffalo_l/w600k_r50.onnx')
 
-    img = cv2.imread('/media/vti/DATA/Work/VTI_Project/FaceRecognition/face_recognition/data_vti_register_0930v4/anh.nguyenthi/2.jpg')
-    bboxes, kpss = retinaface_.detect(img)
-    for i in range(bboxes.shape[0]):
-        bbox = bboxes[i, 0:4]
-        det_score = bboxes[i, 4]
-        kps = None
-        if kpss is not None:
-            kps = kpss[i]
-        out = arcface.get(img, kps)
-        bbox = bbox.astype(int)
-        cv2.imshow('aaa', img[bbox[1]:bbox[3], bbox[0]:bbox[2], :])
-        cv2.waitKey(0)
-        print(out)

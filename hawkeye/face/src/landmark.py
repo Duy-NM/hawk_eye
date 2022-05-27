@@ -9,14 +9,29 @@ import numpy as np
 import cv2
 import onnx
 import onnxruntime
-from utils import face_align
-from utils import reference_world as world
+import face_align
+import reference_world as world
+from aux_functions import get_line, get_points_on_chin, get_angle, convert_106p_to_86p
+import os, gdown
 
 face3Dmodel = world.ref3DModel()
+model_dir = os.path.join(os.path.expanduser('~'), '.hawkeye/model')
 
 class Landmark:
-    def __init__(self, model_file=None, session=None):
-        assert model_file is not None
+    def __init__(self, model_name='', model_file=None, session=None):
+        if model_file is None:
+            assert model_name in ['', '2d', '3d'], 'model_name is wrong'
+            if model_name == '2d':
+                self.model_file = model_dir + '/2d106det.onnx'
+                if os.path.exists(model_dir + '/2d106det.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=18ngkuvwYATi1Y0SDA9ni8fh9SKrQFp0q&export=download', model_dir + '/2d106det.onnx', quiet=False)
+            if model_name == '3d' or  model_name == '':
+                self.model_file = model_dir + '/1k3d68.onnx'
+                if os.path.exists(model_dir + '/1k3d68.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1nRcEJrfWjLPWCDurhH3_JkM40hD_FJ8D&export=download', model_dir + '/1k3d68.onnx', quiet=False)
+        else:
+            self.model_file = model_file
+
         self.model_file = model_file
         self.session = session
         find_sub = False
@@ -98,15 +113,13 @@ class Landmark:
         # face[self.taskname] = pred
         return pred
     
-    def get_face_angles(self, img, bbox, landmark=None, draw=True):
-        if landmark is None:
-            landmark = self.get(img, bbox)
+    def get_face_angles(self, image, landmark, draw=True):
         if draw:
             for la in landmark:
-                cv2.circle(img, la.astype(int), 1, (155,155,155), 1)
+                cv2.circle(image, la.astype(int), 1, (155,155,155), 1)
         refImgPts = np.array([landmark[86], landmark[0], landmark[35], landmark[93], landmark[52], landmark[61]], dtype=np.float64)
         # print(refImgPts)
-        height, width, channel = img.shape
+        height, width, channel = image.shape
         focalLength = width
         cameraMatrix = world.cameraMatrix(focalLength, (height / 2, width / 2))
         mdists = np.zeros((4, 1), dtype=np.float64)
@@ -123,4 +136,12 @@ class Landmark:
         # print(angles[1])
         return angles[1] #, p1,p2
 
+    def get_face_angle2(self, image, landmark):
+        dlib_face_landmark = convert_106p_to_86p(landmark)
+        perp_line, _, _, _, _ = get_line(dlib_face_landmark, image, type="perp_line")
+        # face_e = points1[0]
+        nose_mid_line, _, _, _, _ = get_line(dlib_face_landmark, image, type="nose_long")
 
+        angle = get_angle(perp_line, nose_mid_line)
+
+        return angle

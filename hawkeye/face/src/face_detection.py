@@ -2,22 +2,46 @@ import cv2
 import numpy as np
 import os.path as osp
 import onnxruntime
+import gdown
+import os
 # from utils.face_mask_detection import keras_face_detection as cnn
 
+model_dir = os.path.join(os.path.expanduser('~'), '.hawkeye/model')
 class RetinaFace:
-    def __init__(self, model_file=None, session=None):
-        self.model_file = model_file
+    def __init__(self, model_name='', model_file=None, conf=0.5, session=None):
+        '''
+        model_name: choice in ['retina_s', 'retina_m', 'retina_l']
+                    default is retina_m
+                    retina_s -> SCRFD-500MF
+                    retina_m -> SCRFD-2.5GF
+                    retina_l -> SCRFD-10GF
+        '''
+        if model_file is None:
+            assert model_name in ['', 'retina_s', 'retina_m', 'retina_l'], 'model_name is wrong'
+            if model_name == 'retina_s':
+                self.model_file = model_dir + '/s_det_500m.onnx'
+                if os.path.exists(model_dir + '/s_det_500m.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=11xRbWxVpXbyEvFgVrD3QU2Jl5i61p2B_&export=download', model_dir + '/s_det_500m.onnx', quiet=False)
+            if model_name == 'retina_m' or  model_name == '':
+                self.model_file = model_dir + '/m_det_2.5g.onnx'
+                if os.path.exists(model_dir + '/m_det_2.5g.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1xlzsjKspAU5Si7KGizNPdkiToilW0R9u&export=download', model_dir + '/m_det_2.5g.onnx', quiet=False)
+            if model_name == 'retina_l':
+                self.model_file = model_dir + '/l_det_10g.onnx'
+                if os.path.exists(model_dir + '/l_det_10g.onnx') == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1-WuPlFkL3ald1niehULXmOuyWOyu1iVh&export=download', model_dir + '/l_det_10g.onnx', quiet=False)
+        else:
+            self.model_file = model_file
         self.session = session
-        self.taskname = 'detection'
         if self.session is None:
-            assert self.model_file is not None
             assert osp.exists(self.model_file)
             self.session = onnxruntime.InferenceSession(self.model_file, None)
         self.center_cache = {}
         self.nms_thresh = 0.4
-        self.det_thresh = 0.5
+        self.det_thresh = conf
         self._init_vars()
-    
+
+
     def _init_vars(self):
         input_cfg = self.session.get_inputs()[0]
         input_shape = input_cfg.shape
