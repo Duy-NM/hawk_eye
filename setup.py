@@ -4,8 +4,8 @@ import os
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.0.0'
-PACKAGE_NAME = 'hawkeye'
+VERSION = '1.0.4'
+PACKAGE_NAME = 'hawk_eye'
 AUTHOR = 'Duy Nguyen Manh'
 AUTHOR_EMAIL = 'manhduy160396@email.com'
 URL = 'https://github.com/Duy-NM/hawk_eye'

@@ -1,1 +1,1 @@
-from src.byte_tracker import BYTETracker
+from .src.byte_tracker import BYTETracker

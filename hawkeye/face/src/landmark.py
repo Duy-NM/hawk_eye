@@ -1,17 +1,11 @@
-# -*- coding: utf-8 -*-
-# @Organization  : insightface.ai
-# @Author        : Jia Guo
-# @Time          : 2021-05-04
-# @Function      : 
-
 from __future__ import division
 import numpy as np
 import cv2
 import onnx
 import onnxruntime
-import face_align
-import reference_world as world
-from aux_functions import get_line, get_points_on_chin, get_angle, convert_106p_to_86p
+from face.src import face_align
+from face.src import reference_world as world
+from face.src.aux_functions import get_line, get_points_on_chin, get_angle, convert_106p_to_86p
 import os, gdown
 
 face3Dmodel = world.ref3DModel()
@@ -21,18 +15,17 @@ class Landmark:
     def __init__(self, model_name='', model_file=None, session=None):
         if model_file is None:
             assert model_name in ['', '2d', '3d'], 'model_name is wrong'
-            if model_name == '2d':
+            if model_name == '2d' or  model_name == '':
                 self.model_file = model_dir + '/2d106det.onnx'
-                if os.path.exists(model_dir + '/2d106det.onnx') == False:
-                    gdown.download('https://drive.google.com/u/0/uc?id=18ngkuvwYATi1Y0SDA9ni8fh9SKrQFp0q&export=download', model_dir + '/2d106det.onnx', quiet=False)
-            if model_name == '3d' or  model_name == '':
+                if os.path.exists(self.model_file) == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=18ngkuvwYATi1Y0SDA9ni8fh9SKrQFp0q&export=download', self.model_file, quiet=False)
+            if model_name == '3d':
                 self.model_file = model_dir + '/1k3d68.onnx'
-                if os.path.exists(model_dir + '/1k3d68.onnx') == False:
-                    gdown.download('https://drive.google.com/u/0/uc?id=1nRcEJrfWjLPWCDurhH3_JkM40hD_FJ8D&export=download', model_dir + '/1k3d68.onnx', quiet=False)
+                if os.path.exists(self.model_file) == False:
+                    gdown.download('https://drive.google.com/u/0/uc?id=1nRcEJrfWjLPWCDurhH3_JkM40hD_FJ8D&export=download', self.model_file, quiet=False)
         else:
             self.model_file = model_file
 
-        self.model_file = model_file
         self.session = session
         find_sub = False
         find_mul = False
@@ -113,7 +106,7 @@ class Landmark:
         # face[self.taskname] = pred
         return pred
     
-    def get_face_angles(self, image, landmark, draw=True):
+    def get_face_angle(self, image, landmark, draw=True):
         if draw:
             for la in landmark:
                 cv2.circle(image, la.astype(int), 1, (155,155,155), 1)

@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-from utils import face_align
+from . import face_align
 import onnx
 import onnxruntime
 # import tensorflow as tf

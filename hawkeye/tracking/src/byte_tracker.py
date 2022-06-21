@@ -6,7 +6,7 @@ import copy
 import torch
 import torch.nn.functional as F
 
-import matching
+from . import matching
 from .kalman_filter import KalmanFilter
 from .basetrack import BaseTrack, TrackState
 

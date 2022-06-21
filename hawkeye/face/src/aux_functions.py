@@ -1,7 +1,3 @@
-# Author: aqeelanwar
-# Created: 27 April,2020, 10:21 PM
-# Email: aqeel.anwar@gatech.edu
-
 from configparser import ConfigParser
 import cv2, math, os
 from PIL import Image, ImageDraw
