@@ -3,9 +3,9 @@ import numpy as np
 import cv2
 import onnx
 import onnxruntime
-from face.src import face_align
-from face.src import reference_world as world
-from face.src.aux_functions import get_line, get_points_on_chin, get_angle, convert_106p_to_86p
+from . import face_align
+from . import reference_world as world
+from .aux_functions import get_line, get_points_on_chin, get_angle, convert_106p_to_86p
 import os, gdown
 
 face3Dmodel = world.ref3DModel()

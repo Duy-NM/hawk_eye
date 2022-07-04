@@ -21,7 +21,7 @@ Supported methods:
 [**Retina Face**](https://arxiv.org/abs/1905.00641): Single-stage Dense Face Localisation in the Wild
 ```py
 import cv2
-from hawkeye.face import RetinaFace
+from hawk_eyes.face import RetinaFace
 
 retina = RetinaFace(model_name='retina_s')
 
@@ -38,8 +38,8 @@ cv2.waitKey(0)
 [**ArcFace**](https://arxiv.org/abs/1801.07698): Additive Angular Margin Loss for Deep Face Recognition
 ```py
 import cv2
-from hawkeye.face import RetinaFace
-from hawkeye.face import ArcFace
+from hawk_eyes.face import RetinaFace
+from hawk_eyes.face import ArcFace
 
 arc = ArcFace(model_name='arcface_s')
 retina = RetinaFace(model_name='retina_s')
@@ -57,7 +57,7 @@ Coming soon
 ### 1.4 Get face landmarks, face angles
 ```py
 import cv2
-from hawkeye.face import RetinaFace, Landmark
+from hawk_eyes.face import RetinaFace, Landmark
 
 retina = RetinaFace(model_name='retina_s')
 landmark = Landmark()
@@ -74,8 +74,8 @@ for box,kps in zip(bboxes, kpss):
 
 ```py
 import cv2
-from hawkeye.face import RetinaFace
-from hawkeye.tracking import BYTETracker
+from hawk_eyes.face import RetinaFace
+from hawk_eyes.tracking import BYTETracker
 
 bt = BYTETracker()
 retina = RetinaFace(model_name='retina_s')
