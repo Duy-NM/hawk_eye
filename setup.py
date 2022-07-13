@@ -4,7 +4,7 @@ import os
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '2.0.7'
+VERSION = '2.0.8'
 PACKAGE_NAME = 'hawk_eyes'
 AUTHOR = 'Duy Nguyen Manh'
 AUTHOR_EMAIL = 'manhduy160396@email.com'

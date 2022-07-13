@@ -1,9 +1,12 @@
-# HawkEye
+# Hawk-eyes
 A library for Computer Vision, flexible and easy to use. The library uses a lot of models like ArcFace, RetinaFace, FaceLandmark, OCRModels .... These models will be downloaded automatically when used for the first time, please make sure your network connection is not blocked to google drive.
 
 # Install
-**HawkEye** is available on [pypi.org](https://pypi.org/project/hawk-eyes/), if you just want to use it for your project, install it using pip.
-Requires python>=3.8, torch>=1.8
+**Hawk-eyes** is available on [pypi.org](https://pypi.org/project/hawk-eyes/), if you just want to use it for your project, install it using pip.
+Requires:
+ - python>=3.8
+ - torch==1.8
+ - onnxruntime==1.7 (or onnxruntime-gpu)
 ```
 pip install hawk-eyes
 ```
@@ -15,6 +18,7 @@ Supported methods:
 - [x] [face landmarks]()
 - [x] [face angles]()
 - [x] [Tracking]()
+- [x] [Yolov5 inference]()
 
 # 1. Face Recognition
 ### 1.1 Face detection
